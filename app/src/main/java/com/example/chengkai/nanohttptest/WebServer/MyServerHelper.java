@@ -13,7 +13,7 @@ import java.util.Calendar;
 public class MyServerHelper {
 
 
-    private final static String HTTP_ROOT_PATH = "/sdcard";
+    public final static String HTTP_ROOT_PATH = "/sdcard";
     private final static float KB = 1024;
     private final static float MB = 1024 * KB;
     public final static int HTTP_PORT = 8080;
@@ -28,7 +28,7 @@ public class MyServerHelper {
         }
         if(!rootDir.isDirectory()){
             Log.d(TAG, "getFileListHtml: " + folderName + "is not a Directory");
-            return new String();
+            return null;
         }
 
         String answer = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>sdcard0 - TECNO P5 - WiFi File Transfer Pro</title>";

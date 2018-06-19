@@ -2,6 +2,10 @@ package com.example.chengkai.nanohttptest.WebServer;
 
 import android.util.Log;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import fi.iki.elonen.NanoHTTPD.Response.*;
 import fi.iki.elonen.NanoHTTPD;
 /**
@@ -17,13 +21,22 @@ public class MyServer  extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        if(session.getMethod().equals(Method.POST)){
-            String responseJson = "{\"status\":1,\"msg\":\"OK\"}";
-            return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/html", responseJson);
-        }else if(session.getMethod().equals(Method.GET)){
-
+        String fileListHtml = MyServerHelper.getFileListHtml(session.getUri());
+        if(fileListHtml == null){
+            String fileName = MyServerHelper.HTTP_ROOT_PATH + session.getUri();
+            Log.d(TAG, "download file : " + fileName);
+            File file = new File(fileName);
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Response response = newFixedLengthResponse(NanoHTTPD.Response.Status.OK, getMimeTypeForFile(fileName), fileInputStream,file.length());
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+            return response;
+        } else {
+            return newFixedLengthResponse(fileListHtml);
         }
-        return newFixedLengthResponse(Status.OK,NanoHTTPD.mimeTypes().get("text"),"chengkai test");
-//      return newFixedLengthResponse(MyServerHelper.getFileListHtml(session.getUri()));
     }
 }
